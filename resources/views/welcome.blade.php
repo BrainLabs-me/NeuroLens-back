@@ -19,7 +19,7 @@
                 img {
                     width: 100%;
                     height: 100%;
-                    object_position: 'cover',
+                    object-fit: cover;
                 }
             </style>
         @endif
