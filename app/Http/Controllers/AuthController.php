@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\JsonResponse;
 use Google_Client;
-
+use Illuminate\Auth\Events\Registered;
 class AuthController extends Controller
 {
     /**
@@ -40,7 +40,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-
+        
+        event(new Registered($user));
         // Generate token
         $token = $user->createToken(Str::random(40))->plainTextToken;
 
@@ -136,6 +137,7 @@ class AuthController extends Controller
                 'password' => bcrypt(Str::random(16)), // Dummy password since Google handles auth
             ]
         );
+  
 
         // Log in the user
         Auth::login($user);
