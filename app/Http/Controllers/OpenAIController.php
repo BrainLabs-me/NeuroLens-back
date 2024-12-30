@@ -10,6 +10,7 @@ class OpenAIController extends Controller
     public function createEphemeralToken()
     {
         try {
+            
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json',
@@ -23,6 +24,7 @@ class OpenAIController extends Controller
             } else {
                 return response()->json([
                     'error' => 'Failed to generate ephemeral token',
+                    'toke' =>  env('OPENAI_API_KEY'),
                     'details' => $response->json(),
                 ], $response->status());
             }
