@@ -132,8 +132,7 @@ class AuthController extends Controller
             ['email' => $email],
             [
                 'name' => $name,
-                
-                'google_id' => $googleId,
+                'photo' => $profilePicture,
                 'password' => bcrypt(Str::random(16)), // Dummy password since Google handles auth
             ]
         );
