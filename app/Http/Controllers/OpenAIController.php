@@ -17,6 +17,7 @@ class OpenAIController extends Controller
             ])->post('https://api.openai.com/v1/realtime/sessions', [
                 'model' => 'gpt-4o-realtime-preview-2024-12-17',
                 'voice' => 'verse',
+                "instructions"=> "Pricaj na srpskom jeziku."
             ]);
 
             if ($response->successful()) {
