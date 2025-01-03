@@ -1,0 +1,4 @@
+created:
+    - database/migrations/2025_01_03_222929_create_users_table.php
+models:
+    User: { id: id, name: string, email: string, password: string, photo: 'text nullable' }

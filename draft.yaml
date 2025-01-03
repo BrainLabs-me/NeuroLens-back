@@ -1,0 +1,7 @@
+models:
+  User:
+    id: id
+    name: string
+    email: string
+    password: string
+    photo: text nullable
