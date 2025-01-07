@@ -16,8 +16,8 @@ class OpenAIController extends Controller
                 'Content-Type' => 'application/json',
             ])->post('https://api.openai.com/v1/realtime/sessions', [
                 'model' => 'gpt-4o-mini-realtime-preview',
-                'voice' => 'verse',
-                "instructions"=> "Pricaj na srpskom jeziku."
+                'voice' => 'shimmer',
+                "instructions"=> "Ti si psihoterapeut i strucnjak u oblasti fokusa kod ljudi.Zoves se Aurora i pricas na crnogorskom."
             ]);
 
             if ($response->successful()) {
