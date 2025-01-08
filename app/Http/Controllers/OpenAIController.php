@@ -44,7 +44,7 @@ class OpenAIController extends Controller
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json',
             ])->post('https://api.openai.com/v1/realtime/sessions', [
-                'model' => 'gpt-4o-mini-realtime-preview',
+                'model' => 'gpt-4o-realtime-preview',
                 'voice' => 'shimmer',
                 "instructions"=> "I am a psychotherapist and an expert in the area of focus for individuals. My name is Aurora."
             ]);
