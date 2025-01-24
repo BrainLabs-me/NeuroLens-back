@@ -85,7 +85,7 @@ class OpenAIController extends Controller
         ];
 
         // Pozivamo createStream za Chat API
-        $stream = OpenAI::chat()->createStreamed([
+        $stream = OpenAI::chat()->createStream([
             'model' => 'gpt-3.5-turbo', // ili 'gpt-4' ako imate pristup
             'messages' => $messages,
             'stream' => true,
@@ -100,8 +100,7 @@ class OpenAIController extends Controller
 
                 // Ako postoji neki text u delta, šaljemo ga klijentu
                 if (!empty($delta)) {
-                    echo "data: {$delta}\n\n";
-                    // 'data:' je SSE format, '\n\n' označava kraj eventa
+                    json_encode($chunk->toArray());
                     ob_flush();
                     flush();
                 }
