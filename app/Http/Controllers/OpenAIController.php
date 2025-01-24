@@ -85,7 +85,7 @@ class OpenAIController extends Controller
         ];
 
         // Pozivamo createStream za Chat API
-        $stream = OpenAI::chat()->createStream([
+        $stream = OpenAI::chat()->createStreamed([
             'model' => 'gpt-3.5-turbo', // ili 'gpt-4' ako imate pristup
             'messages' => $messages,
             'stream' => true,
