@@ -16,3 +16,6 @@ Route::post('/google/login', [AuthController::class, 'googleLogin']);
 
 Route::get('/session/en', [OpenAIController::class, 'createEphemeralTokenEN']);
 Route::get('/session/me', [OpenAIController::class, 'createEphemeralTokenME']);
+
+
+Route::post('/chat-stream', [OpenAIController::class, 'chatStream']);
