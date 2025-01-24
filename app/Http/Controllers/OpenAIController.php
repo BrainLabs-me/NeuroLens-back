@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use OpenAI\Laravel\Facades\OpenAI;
 
 class OpenAIController extends Controller
 {
@@ -64,5 +65,57 @@ class OpenAIController extends Controller
                 'details' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function chatStream(Request $request)
+    {
+        // Preuzimamo prompt koji nam stiže iz body-a POST zahtjeva.
+        $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
+
+        // Postavljamo defaultne parametre za Chat completions
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => 'Ti si asistent. Odgovaraj kratko i jasno.' 
+            ],
+            [
+                'role' => 'user',
+                'content' => $userPrompt
+            ],
+        ];
+
+        // Pozivamo createStream za Chat API
+        $stream = OpenAI::chat()->createStream([
+            'model' => 'gpt-3.5-turbo', // ili 'gpt-4' ako imate pristup
+            'messages' => $messages,
+            'stream' => true,
+        ]);
+
+        // Vraćamo SSE (Server-Sent Events) response
+        return response()->stream(function () use ($stream) {
+            // Stream je iterabilan objekat. Čim dobije nove podatke, vraća ih.
+            foreach ($stream as $response) {
+                // Svaki $response je segment ChatCompletionChunk objekta
+                $delta = $response->choices[0]->delta->content ?? '';
+
+                // Ako postoji neki text u delta, šaljemo ga klijentu
+                if (!empty($delta)) {
+                    echo "data: {$delta}\n\n";
+                    // 'data:' je SSE format, '\n\n' označava kraj eventa
+                    ob_flush();
+                    flush();
+                }
+            }
+
+            // Kada je streaming gotovo, šaljemo specijalni event 'done'
+            echo "event: done\n";
+            echo "data: [DONE]\n\n";
+            ob_flush();
+            flush();
+        }, 200, [
+            'Content-Type'  => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection'    => 'keep-alive',
+        ]);
     }
 }
