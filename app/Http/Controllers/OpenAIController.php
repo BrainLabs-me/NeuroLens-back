@@ -100,7 +100,8 @@ class OpenAIController extends Controller
 
                 // Ako postoji neki text u delta, šaljemo ga klijentu
                 if (!empty($delta)) {
-                    json_encode($chunk->toArray());
+                    echo "data: {$delta}\n\n";
+                    // 'data:' je SSE format, '\n\n' označava kraj 
                     ob_flush();
                     flush();
                 }
