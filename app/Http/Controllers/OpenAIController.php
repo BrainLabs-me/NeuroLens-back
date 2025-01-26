@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use OpenAI\Laravel\Facades\OpenAI;
+use App\Models\Chat;
 
 class OpenAIController extends Controller
 {
@@ -91,7 +92,10 @@ class OpenAIController extends Controller
         ]);
 
         $generatedText = $response->choices[0]->message->content ?? '';
-
+        Chat::create([
+            'message' => $generatedText,
+            'prompt' => $userPrompt
+        ]);
         return response()->json([
             'success' => true,
             'message' => $generatedText,
