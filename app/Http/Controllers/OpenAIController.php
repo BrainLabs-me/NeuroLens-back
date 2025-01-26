@@ -103,7 +103,7 @@ public function sendMessage(Request $request)
 
     // Dodaj korisničku poruku u thread
     try {
-        $message = OpenAI::beta()->threads()->messages()->create(
+        $message = OpenAI::threads()->messages()->create(
             $threadId, [
                 'role' => 'user',
                 'content' => $userPrompt
@@ -118,8 +118,8 @@ public function sendMessage(Request $request)
 
     // Pokreni asistenta sa postojećim thread-om
     try {
-        $assistantId = 'your-assistant-id';  // Postavi ID svog asistenta
-        $run = OpenAI::beta()->threads()->runs()->createAndPoll(
+        $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';  // Postavi ID svog asistenta
+        $run = OpenAI::threads()->createAndRun(
             $threadId,
             [
                 'assistant_id' => $assistantId,
