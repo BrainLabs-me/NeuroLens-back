@@ -9,6 +9,7 @@ class Chat extends Model
     protected $fillable = [
         'message',
         'prompt',
+        'user_id'
     ];
 
 }

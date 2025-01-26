@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use OpenAI\Laravel\Facades\OpenAI;
 use App\Models\Chat;
+use Illuminate\Support\Facades\Auth;
 
 class OpenAIController extends Controller
 {
@@ -70,10 +71,8 @@ class OpenAIController extends Controller
 
     public function chat(Request $request)
 {
-    // Preuzimamo prompt koji dolazi iz body-a POST zahtjeva.
     $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
-
-    // Postavljamo defaultne parametre za Chat completions
+    $user = Auth::user();
     $messages = [
         [
             'role' => 'system',
@@ -93,9 +92,11 @@ class OpenAIController extends Controller
 
         $generatedText = $response->choices[0]->message->content ?? '';
         Chat::create([
+            'user_id' => $user->id,
             'message' => $generatedText,
             'prompt' => $userPrompt
         ]);
+
         return response()->json([
             'success' => true,
             'message' => $generatedText,
