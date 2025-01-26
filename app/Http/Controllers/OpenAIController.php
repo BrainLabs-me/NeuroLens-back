@@ -244,4 +244,120 @@ public function streamAudio(Request $request)
             'error' => 'Failed to stream audio: ' . $e->getMessage(),
         ], 500);
     }
-}}
+}
+
+public function createThreadGuest(Request $request)
+{
+
+    try {
+        // Kreiraj Thread
+        $thread = OpenAI::threads()->create([]);
+
+        return response()->json([
+            'success' => true,
+            'thread_id' => $thread->id
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Failed to create thread: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function sendMessageGuest(Request $request)
+{
+    $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
+    $threadId = $request->input('thread_id');  
+
+    if (!$threadId) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Thread ID is required.'
+        ], 400);
+    }
+
+    try {
+        $message = OpenAI::threads()->messages()->create(
+            $threadId, [
+                'role' => 'user',
+                'content' =>  $userPrompt
+            ]
+        );
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Failed to add message to thread: ' . $e->getMessage(),
+        ], 500);
+    }
+
+
+
+    try {
+        // 1) Create the run
+        $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';
+        $run = OpenAI::threads()->runs()->create(
+            threadId: $threadId,
+            parameters: [
+                'assistant_id' => $assistantId,
+            ]
+        );
+    
+        // 2) Poll for completion
+        $maxAttempts = 20;
+        $attempt = 0;
+        $sleepSeconds = 1;
+    
+        while ($attempt < $maxAttempts) {
+            $run = OpenAI::threads()->runs()->retrieve($threadId, $run->id);
+    
+            if ($run->status === 'completed') {
+                break;
+            }
+    
+            if ($run->status === 'failed') {
+                throw new \Exception('Run failed to complete');
+            }
+    
+            sleep($sleepSeconds);
+            $attempt++;
+        }
+    
+        // 3) If it's completed, get the messages
+        if ($run->status === 'completed') {
+            $messages = OpenAI::threads()->messages()->list($threadId);
+    
+            // Now you can find the assistant’s most recent response
+            $generatedText = '';
+            foreach ($messages->data as $msg) {
+                if ($msg->role === 'assistant') {
+                    // Adjust this to match how your response is structured
+                    $generatedText = $msg->content[0]->text->value ?? '';
+                    break;
+                }
+            }
+    
+            // Save to your database, return to user, etc.
+            return response()->json([
+                'success' => true,
+                'message' => $generatedText,
+            ]);
+        }
+    
+        // If we exit the loop and never hit 'completed', handle that gracefully
+        return response()->json([
+            'success' => false,
+            'error' => 'Run is still queued after maximum attempts',
+        ], 500);
+    
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => 'Failed to run assistant: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+}
+
+
+
