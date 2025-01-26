@@ -189,48 +189,54 @@ public function sendMessage(Request $request)
 }
 
 public function streamAudio(Request $request)
-    {
-        // Validate the incoming request
-        $validated = $request->validate([
-            'input' => 'required|string',
-        ], [
-            'input.required' => 'The input text is required.',
-            'input.string' => 'The input must be a string.',
+{
+    // Validate the incoming request
+    $validated = $request->validate([
+        'input' => 'required|string',
+    ], [
+        'input.required' => 'The input text is required.',
+        'input.string' => 'The input must be a string.',
+    ]);
+
+    // Retrieve input data
+    $inputText = $validated['input'];
+
+    try {
+        // Generate speech using OpenAI's TTS
+        $audioContent = OpenAI::audio()->speech([
+            'model' => 'tts-1',
+            'input' => $inputText,
+            'voice' => 'alloy',
         ]);
 
-        // Retrieve input data
-        $inputText = $validated['input'];
-
-        try {
-            // Generate speech using OpenAI's TTS
-            $response = OpenAI::audio()->speech([
-                'model' => 'tts-1',
-                'input' => $inputText,
-                'voice' => 'alloy',
-            ]);
-
-            // Check if the response contains audio content
-            if (!$response || !isset($response['audio_content'])) {
-            }
-
-            // Decode the audio content if it's base64 encoded, adjust as needed
-            $audioContent = base64_decode($response['audio_content']);
-
-            // Return the audio as a streamed response with appropriate headers
-            return Response::make($audioContent, 200, [
-                'Content-Type' => 'audio/mpeg',
-                'Content-Disposition' => 'inline; filename="speech.mp3"',
-                'Content-Length' => strlen($audioContent),
-            ]);
-
-        } catch (Exception $e) {
-            // Log the error for debugging
-
-            // Return a JSON response with the error message
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to stream audio: ' . $e->getMessage(),
-            ], 500);
+        // Verify that audioContent is not empty
+        if (!$audioContent) {
         }
+
+        // If the audio content is base64 encoded, decode it
+        // Uncomment the following line if necessary
+        // $audioContent = base64_decode($audioContent);
+
+        // Determine the audio format. Adjust 'audio/mpeg' if using a different format
+        $contentType = 'audio/mpeg';
+
+        // Optionally, determine the file extension based on content type
+        $fileExtension = 'mp3';
+
+        // Return the audio as a streamed response with appropriate headers
+        return Response::make($audioContent, 200, [
+            'Content-Type' => $contentType,
+            'Content-Disposition' => 'inline; filename="speech.' . $fileExtension . '"',
+            'Content-Length' => strlen($audioContent),
+        ]);
+
+    } catch (Exception $e) {
+        // Log the error for debugging
+
+        // Return a JSON response with the error message
+        return response()->json([
+            'success' => false,
+            'error' => 'Failed to stream audio: ' . $e->getMessage(),
+        ], 500);
     }
-}
+}}
