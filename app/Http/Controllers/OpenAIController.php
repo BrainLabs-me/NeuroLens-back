@@ -146,12 +146,7 @@ public function sendMessage(Request $request)
             }
         }
 
-        // Sačuvaj odgovor u bazi
-        Chat::create([
-            'user_id' => $user->id,
-            'message' => $generatedText,
-            'prompt' => $userPrompt
-        ]);
+  
 
         return response()->json([
             'success' => true,
