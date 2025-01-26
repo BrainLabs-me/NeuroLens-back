@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\Http;
 use OpenAI\Laravel\Facades\OpenAI;
 use App\Models\Chat;
 use Http\Discovery\Exception;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Response;
 class OpenAIController extends Controller
 {
     public function createEphemeralTokenME()
