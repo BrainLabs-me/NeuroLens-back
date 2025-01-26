@@ -190,7 +190,6 @@ public function sendMessage(Request $request)
 
 public function streamAudio(Request $request)
     {
-        $yourApiKey = getenv('OPENAI_API_KEY');
         // Validate incoming request data
         $request->validate([
             'input' => 'required|string',
@@ -204,7 +203,7 @@ public function streamAudio(Request $request)
             // Replace with your actual client initialization
 
             // Initiate the speech stream
-            $stream = OpenAI::audio()->speechStreamed([
+            $stream = OpenAI::audio()->speech([
                 'model' => 'tts-1',
                 'input' => $inputText,
                 'voice' => 'alloy',
@@ -219,14 +218,10 @@ public function streamAudio(Request $request)
             ];
 
             // Stream the audio to the client
-            return Response::stream(function() use ($stream) {
-                foreach ($stream as $chunk) {
-                    echo $chunk;
-                    // Ensure immediate delivery of chunks
-                    @ob_flush();
-                    @flush();
-                }
-            }, 200, $headers);
+            return Response::json([
+                'success'=> true,
+                'audio' => $stream,
+            ]);
 
         } catch (Exception $e) {
             // Log the error if necessary
