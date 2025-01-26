@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chat', function (Blueprint $table) {
+        Schema::create('chats', function (Blueprint $table) {
             $table->id(); // Automatski primarni ključ za ID poruke
             $table->foreignId('user_id')  // Polje za ID korisnika (odnos prema korisnicima)
                 ->constrained()            // Pretpostavljamo da postoji tabela 'users' za korisnike
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chat');
+        Schema::dropIfExists('chats');
     }
 };
