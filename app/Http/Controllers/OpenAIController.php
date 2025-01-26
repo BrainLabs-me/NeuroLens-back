@@ -67,55 +67,41 @@ class OpenAIController extends Controller
         }
     }
 
-    public function chatStream(Request $request)
-    {
-        // Preuzimamo prompt koji nam stiže iz body-a POST zahtjeva.
-        $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
+    public function chat(Request $request)
+{
+    // Preuzimamo prompt koji dolazi iz body-a POST zahtjeva.
+    $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
 
-        // Postavljamo defaultne parametre za Chat completions
-        $messages = [
-            [
-                'role' => 'system',
-                'content' => 'Ti si asistent. Odgovaraj kratko i jasno.' 
-            ],
-            [
-                'role' => 'user',
-                'content' => $userPrompt
-            ],
-        ];
+    // Postavljamo defaultne parametre za Chat completions
+    $messages = [
+        [
+            'role' => 'system',
+            'content' => 'Ti si asistent. Odgovaraj kratko i jasno.'
+        ],
+        [
+            'role' => 'user',
+            'content' => $userPrompt
+        ],
+    ];
 
-        // Pozivamo createStream za Chat API
-        $stream = OpenAI::chat()->createStreamed([
-            'model' => 'gpt-4o-mini', // ili 'gpt-4' ako imate pristup
+    try {
+        $response = OpenAI::chat()->create([
+            'model' => 'gpt-4o-mini',
             'messages' => $messages,
-            'stream' => true,
         ]);
 
-        // Vraćamo SSE (Server-Sent Events) response
-        return response()->stream(function () use ($stream) {
-            // Stream je iterabilan objekat. Čim dobije nove podatke, vraća ih.
-            foreach ($stream as $response) {
-                // Svaki $response je segment ChatCompletionChunk objekta
-                $delta = $response->choices[0]->delta->content ?? '';
+        $generatedText = $response->choices[0]->message->content ?? '';
 
-                // Ako postoji neki text u delta, šaljemo ga klijentu
-                if (!empty($delta)) {
-                    echo "data: {$delta}\n\n";
-                    // 'data:' je SSE format, '\n\n' označava kraj 
-                    ob_flush();
-                    flush();
-                }
-            }
-
-            // Kada je streaming gotovo, šaljemo specijalni event 'done'
-            echo "event: done\n";
-            echo "data: [DONE]\n\n";
-            ob_flush();
-            flush();
-        }, 200, [
-            'Content-Type'  => 'text/event-stream',
-            'Cache-Control' => 'no-cache',
-            'Connection'    => 'keep-alive',
+        return response()->json([
+            'success' => true,
+            'message' => $generatedText,
         ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
 }
