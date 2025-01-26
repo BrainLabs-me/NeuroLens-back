@@ -106,7 +106,7 @@ public function sendMessage(Request $request)
         $message = OpenAI::threads()->messages()->create(
             $threadId, [
                 'role' => 'user',
-                'content' => 'cao kkao si'
+                'content' => 'cao kkao si', // User message
             ]
         );
     } catch (Exception $e) {
@@ -115,29 +115,84 @@ public function sendMessage(Request $request)
             'error' => 'Failed to add message to thread: ' . $e->getMessage(),
         ], 500);
     }
-
-    // Pokreni asistenta sa postojećim thread-om
+    
+    // Step 2: Run the assistant with the existing thread
     try {
-        $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';  // Postavi ID svog asistenta
+        $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';  // Set your assistant's ID
         $run = OpenAI::threads()->runs()->create(
             threadId: $threadId, 
             parameters: [
                 'assistant_id' => $assistantId,
-            ],
+            ]
         );
-        $runJson = json_encode($run); 
-
-        // Set content for the response
-        return response($runJson);
+    
+        // Check the run status and wait for it to complete
+        $counter = 0;
+        while ($run->status !== 'completed') {
+            // Retrieve current run status
+            $run = OpenAI::threads()->runs()->retrieve([
+                'thread_id' => $threadId, 
+                'run_id' => $run->id
+            ]);
+    
+            // Debugging print every 10 iterations to see the current run status
+            if ($counter % 10 == 0) {
+                // You can log or print the status for debugging purposes
+                echo "Run status: " . $run->status . "\n";
+            }
+    
+            // Increase counter and wait before retrying
+            $counter++;
+            sleep(5);
+        }
+    
+        // Step 3: Once completed, retrieve the assistant's response
+        if ($run->status === 'completed') {
+            // Retrieve all messages in the thread
+            $messages = OpenAI::threads()->messages()->list($run->thread_id);
+    
+            $generatedText = '';
+    
+            // Loop through the messages to find the assistant's response
+            foreach ($messages->data as $message) {
+                if ($message->role === 'assistant') {
+                    // Extract assistant's response content
+                    $generatedText = $message->content; // Make sure this field is correct
+                    break;
+                }
+            }
+    
+            // If we have a valid generated response, save it to the database
+            if (!empty($generatedText)) {
+                Chat::create([
+                    'user_id' => $user->id,
+                    'message' => $generatedText,
+                    'prompt' => 'cao kkao si', // Use the user prompt
+                ]);
+    
+                // Return the response with the assistant's generated text
+                return response()->json([
+                    'success' => true,
+                    'message' => $generatedText,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No response from assistant.',
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'error' => 'Run failed or did not complete successfully.',
+            ], 500);
+        }
     } catch (Exception $e) {
         return response()->json([
             'success' => false,
             'error' => 'Failed to run the assistant: ' . $e->getMessage(),
         ], 500);
-    }
-
-    // Dobij odgovor asistenta i sačuvaj ga u bazu
-    if ($run->status === 'completed') {
+    }if ($run->status === 'completed') {
         $messages = OpenAI::threads()->messages()->list($run->thread_id);
         
         $generatedText = '';
