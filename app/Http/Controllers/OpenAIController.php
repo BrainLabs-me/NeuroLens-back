@@ -73,7 +73,7 @@ class OpenAIController extends Controller
 {
     try {
         // Kreiraj Thread
-        $thread = OpenAI::beta()->threads()->create();
+        $thread = OpenAI::threads()->create([]);
 
         return response()->json([
             'success' => true,
@@ -135,7 +135,7 @@ public function sendMessage(Request $request)
 
     // Dobij odgovor asistenta i sačuvaj ga u bazu
     if ($run->status === 'completed') {
-        $messages = OpenAI::beta()->threads()->messages()->list($run->thread_id);
+        $messages = OpenAI::threads()->messages()->list($run->thread_id);
         
         $generatedText = '';
         foreach ($messages->data as $message) {
