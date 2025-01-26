@@ -106,7 +106,7 @@ public function sendMessage(Request $request)
         $message = OpenAI::threads()->messages()->create(
             $threadId, [
                 'role' => 'user',
-                'content' => $userPrompt
+                'content' => 'cao'
             ]
         );
     } catch (Exception $e) {
