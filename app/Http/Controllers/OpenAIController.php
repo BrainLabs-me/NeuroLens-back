@@ -203,10 +203,9 @@ public function streamAudio(Request $request)
         try {
             // Initialize your TTS client
             // Replace with your actual client initialization
-            $client = OpenAI::client($yourApiKey);
 
             // Initiate the speech stream
-            $stream = $client->audio()->speechStreamed([
+            $stream = OpenAI::audio()->speechStreamed([
                 'model' => 'tts-1',
                 'input' => $inputText,
                 'voice' => 'alloy',
