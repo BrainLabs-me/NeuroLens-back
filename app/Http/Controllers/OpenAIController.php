@@ -191,6 +191,7 @@ public function sendMessage(Request $request)
 
 public function streamAudio(Request $request)
     {
+        $yourApiKey = getenv('OPENAI_API_KEY');
         // Validate incoming request data
         $request->validate([
             'input' => 'required|string',
@@ -202,7 +203,7 @@ public function streamAudio(Request $request)
         try {
             // Initialize your TTS client
             // Replace with your actual client initialization
-            $client = new OpenAI();
+            $client = OpenAI::client($yourApiKey);
 
             // Initiate the speech stream
             $stream = $client->audio()->speechStreamed([
