@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use OpenAI\Laravel\Facades\OpenAI;
 use App\Models\Chat;
+use Http\Discovery\Exception;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class OpenAIController extends Controller
@@ -187,5 +189,55 @@ public function sendMessage(Request $request)
     }
 }
 
+public function streamAudio(Request $request)
+    {
+        // Validate incoming request data
+        $request->validate([
+            'input' => 'required|string',
+        ]);
 
+        // Retrieve input data
+        $inputText = $request->input('input');
+
+        try {
+            // Initialize your TTS client
+            // Replace with your actual client initialization
+            $client = new OpenAI();
+
+            // Initiate the speech stream
+            $stream = $client->audio()->speechStreamed([
+                'model' => 'tts-1',
+                'input' => $inputText,
+                'voice' => 'alloy',
+            ]);
+
+            // Define response headers for audio streaming
+            $headers = [
+                'Content-Type' => 'audio/mpeg', // Update based on your audio format
+                'Transfer-Encoding' => 'chunked',
+                'Cache-Control' => 'no-cache',
+                'Connection' => 'keep-alive',
+            ];
+
+            // Stream the audio to the client
+            return Response::stream(function() use ($stream) {
+                foreach ($stream as $chunk) {
+                    echo $chunk;
+                    // Ensure immediate delivery of chunks
+                    @ob_flush();
+                    @flush();
+                }
+            }, 200, $headers);
+
+        } catch (Exception $e) {
+            // Log the error if necessary
+            // Log::error('TTS Streaming Error: ' . $e->getMessage());
+
+            // Return a JSON error response
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to stream audio: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
