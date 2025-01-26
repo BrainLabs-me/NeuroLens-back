@@ -90,27 +90,9 @@ class OpenAIController extends Controller
 public function sendMessage(Request $request)
 {
     $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
-    $threadId = $request->input('thread_id');  // Uzimaš thread_id iz zahteva
-
+    $threadId = $request->input('thread_id');  
     $user = Auth::user();
-// try{
-//     $ass = OpenAI::assistants()->create([
-//         'instructions' => 'You are a personal math tutor. When asked a question, write and run Python code to answer the question.',
-//         'name' => 'Math Tutor',
-//         'tools' => [
-//             [
-//                 'type' => 'code_interpreter',
-//             ],
-//         ],
-//         'model' => 'gpt-4',
-//     ]);
-    
-// } catch (Exception $e){
-//     return response()->json([
-//         'success' => false,
-//         'error' => 'Failed to add message to thread: ' . $e->getMessage(),
-//     ], 500);
-// }
+
     if (!$threadId) {
         return response()->json([
             'success' => false,
@@ -118,7 +100,6 @@ public function sendMessage(Request $request)
         ], 400);
     }
 
-    // Dodaj korisničku poruku u thread
     try {
         $message = OpenAI::threads()->messages()->create(
             $threadId, [
@@ -146,25 +127,21 @@ public function sendMessage(Request $request)
         );
     
         // 2) Poll for completion
-        $maxAttempts = 10;
+        $maxAttempts = 20;
         $attempt = 0;
-        $sleepSeconds = 2;
+        $sleepSeconds = 1;
     
         while ($attempt < $maxAttempts) {
-            // Retrieve the current status of the run
             $run = OpenAI::threads()->runs()->retrieve($threadId, $run->id);
     
             if ($run->status === 'completed') {
-                // Great, it's finished
                 break;
             }
     
-            // Optionally, check for 'failed' or 'canceled' etc.
             if ($run->status === 'failed') {
                 throw new \Exception('Run failed to complete');
             }
     
-            // Not done yet, so sleep and keep checking
             sleep($sleepSeconds);
             $attempt++;
         }
