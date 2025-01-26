@@ -125,10 +125,8 @@ public function sendMessage(Request $request)
                 'assistant_id' => $assistantId,
             ],
         );
-        $runJson = json_encode($run); 
 
         // Set content for the response
-        return response($runJson);
     } catch (Exception $e) {
         return response()->json([
             'success' => false,
