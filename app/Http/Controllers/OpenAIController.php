@@ -130,10 +130,10 @@ public function sendMessage(Request $request)
         $counter = 0;
         while ($run->status !== 'completed') {
             // Retrieve current run status
-            $run = OpenAI::threads()->runs()->retrieve([
-                'thread_id' => $threadId, 
-                'run_id' => $run->id
-            ]);
+            $run = OpenAI::threads()->runs()->retrieve(
+                threadId: $threadId,
+                runId: $run->id,
+            );
     
             // Debugging print every 10 iterations to see the current run status
             if ($counter % 10 == 0) {
