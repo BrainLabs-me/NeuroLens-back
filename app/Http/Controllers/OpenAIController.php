@@ -119,19 +119,11 @@ public function sendMessage(Request $request)
     // Pokreni asistenta sa postojećim thread-om
     try {
         $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';  // Postavi ID svog asistenta
-        $run = OpenAI::threads()->createAndRun(
-            [
-            'assistant_id' => $assistantId,
-            'thread' => [
-                'messages' =>
-                [
-                    [
-                        'role' => 'user',
-                        'content' => 'Explain deep learning to a 5 year old.',
-                    ],
-                ],
-        ],
-            ]
+        $run = OpenAI::threads()->runs()->create(
+            threadId: $threadId, 
+            parameters: [
+                'assistant_id' => $assistantId,
+            ],
         );
         return $run;
     } catch (Exception $e) {
