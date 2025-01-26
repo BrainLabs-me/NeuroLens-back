@@ -120,7 +120,6 @@ public function sendMessage(Request $request)
     try {
         $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';  // Postavi ID svog asistenta
         $run = OpenAI::threads()->createAndRun(
-            $threadId,
             [
                 'assistant_id' => $assistantId,
                 'thread' => [
