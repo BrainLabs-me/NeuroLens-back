@@ -18,4 +18,5 @@ Route::get('/session/en', [OpenAIController::class, 'createEphemeralTokenEN']);
 Route::get('/session/me', [OpenAIController::class, 'createEphemeralTokenME']);
 
 
-Route::post('/chat', [OpenAIController::class, 'chat'])->middleware('auth:sanctum');
+Route::post('/send-message', [OpenAIController::class, 'sendMessage'])->middleware('auth:sanctum');
+Route::post('/start-chat', [OpenAIController::class, 'create-thread'])->middleware('auth:sanctum');
