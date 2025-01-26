@@ -123,7 +123,15 @@ public function sendMessage(Request $request)
             $threadId,
             [
                 'assistant_id' => $assistantId,
-                'instructions' => 'Please address the user as Jane Doe. The user has a premium account.',
+                'thread' => [
+            'messages' =>
+                [
+                    [
+                        'role' => 'user',
+                        'content' => 'Explain deep learning to a 5 year old.',
+                    ],
+                ],
+        ],
             ]
         );
     } catch (Exception $e) {
