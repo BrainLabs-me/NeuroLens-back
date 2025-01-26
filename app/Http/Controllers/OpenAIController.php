@@ -76,9 +76,13 @@ class OpenAIController extends Controller
 
     try {
         // Kreiraj Thread
-        $thread = OpenAI::threads()->create([
-            'role' => 'user',
-            'content' =>  'Moje ime je'. $user->name,
+        $thread = OpenAI::threads()->create(['messages' =>
+                [
+                    [
+                        'role' => 'user',
+                        'content' => 'Moje ime je ' . $user->name,
+                    ],
+                ],
         ]);
 
         return response()->json([
