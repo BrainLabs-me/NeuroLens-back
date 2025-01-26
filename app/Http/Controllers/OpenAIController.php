@@ -106,7 +106,7 @@ public function sendMessage(Request $request)
         $message = OpenAI::threads()->messages()->create(
             $threadId, [
                 'role' => 'user',
-                'content' => 'cao'
+                'content' => 'cao kkao si'
             ]
         );
     } catch (Exception $e) {
@@ -125,8 +125,10 @@ public function sendMessage(Request $request)
                 'assistant_id' => $assistantId,
             ],
         );
+        $runJson = json_encode($run); 
 
         // Set content for the response
+        return response($runJson);
     } catch (Exception $e) {
         return response()->json([
             'success' => false,
@@ -146,7 +148,12 @@ public function sendMessage(Request $request)
             }
         }
 
-  
+        // Sačuvaj odgovor u bazi
+        Chat::create([
+            'user_id' => $user->id,
+            'message' => $generatedText,
+            'prompt' => $userPrompt
+        ]);
 
         return response()->json([
             'success' => true,
