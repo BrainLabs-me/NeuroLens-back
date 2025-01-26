@@ -121,9 +121,9 @@ public function sendMessage(Request $request)
         $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';  // Postavi ID svog asistenta
         $run = OpenAI::threads()->createAndRun(
             [
-                'assistant_id' => $assistantId,
-                'thread' => [
-            'messages' =>
+            'assistant_id' => $assistantId,
+            'thread' => [
+                'messages' =>
                 [
                     [
                         'role' => 'user',
@@ -133,6 +133,7 @@ public function sendMessage(Request $request)
         ],
             ]
         );
+        return $run;
     } catch (Exception $e) {
         return response()->json([
             'success' => false,
