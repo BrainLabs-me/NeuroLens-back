@@ -69,44 +69,82 @@ class OpenAIController extends Controller
         }
     }
 
-    public function chat(Request $request)
-{
-    $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
-    $user = Auth::user();
-    $messages = [
-        [
-            'role' => 'system',
-            'content' => 'Ti si asistent. Odgovaraj kratko i jasno.'
-        ],
-        [
-            'role' => 'user',
-            'content' => $userPrompt
-        ],
-    ];
-
-    try {
-        $response = OpenAI::chat()->create([
-            'model' => 'gpt-4o-mini',
-            'messages' => $messages,
-        ]);
-
-        $generatedText = $response->choices[0]->message->content ?? '';
-        Chat::create([
-            'user_id' => $user->id,
-            'message' => $generatedText,
-            'prompt' => $userPrompt
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => $generatedText,
-        ]);
-    } catch (Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-        ], 500);
+    public function chat(Request $request) 
+    {
+        $userPrompt = $request->input('prompt', 'Zdravo, kako si?');
+        $user = Auth::user();
+    
+        // Step 1: Kreiraj Thread (razgovor)
+        try {
+            $thread = OpenAI::beta()->threads()->create();
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to create a thread: ' . $e->getMessage(),
+            ], 500);
+        }
+    
+        // Step 2: Dodaj korisničku poruku u thread
+        try {
+            $message = OpenAI::beta()->threads()->messages()->create(
+                $thread->id, [
+                    'role' => 'user',
+                    'content' => $userPrompt
+                ]
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to add message to thread: ' . $e->getMessage(),
+            ], 500);
+        }
+    
+        // Step 3: Pokreni Asistenta sa kreiranim thread-om
+        try {
+            $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX'; // Postavi ID asistenta, mora biti prethodno kreiran
+            $run = OpenAI::beta()->threads()->runs()->createAndPoll(
+                $thread->id,
+                [
+                    'assistant_id' => $assistantId,
+                    'instructions' => 'Please address the user as Jane Doe. The user has a premium account.',
+                ]
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to run the assistant: ' . $e->getMessage(),
+            ], 500);
+        }
+    
+        // Step 4: Dobij odgovor asistenta i sačuvaj razgovor
+        if ($run->status === 'completed') {
+            $messages = OpenAI::beta()->threads()->messages()->list($run->thread_id);
+            
+            $generatedText = '';
+            foreach ($messages->data as $message) {
+                if ($message->role === 'assistant') {
+                    $generatedText = $message->content[0]->text->value;
+                    break;
+                }
+            }
+    
+            // Sačuvaj odgovor u bazu
+            Chat::create([
+                'user_id' => $user->id,
+                'message' => $generatedText,
+                'prompt' => $userPrompt
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => $generatedText,
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'error' => 'Run failed or did not complete successfully',
+            ], 500);
+        }
     }
-}
 
 }
