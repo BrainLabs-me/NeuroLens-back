@@ -72,9 +72,14 @@ class OpenAIController extends Controller
 
     public function createThread(Request $request)
 {
+    $user = Auth::user();
+
     try {
         // Kreiraj Thread
-        $thread = OpenAI::threads()->create([]);
+        $thread = OpenAI::threads()->create([
+            'role' => 'user',
+            'content' =>  'Moje ime je'. $user->name,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -213,11 +218,7 @@ public function streamAudio(Request $request)
         if (!$audioContent) {
         }
 
-        // If the audio content is base64 encoded, decode it
-        // Uncomment the following line if necessary
-        // $audioContent = base64_decode($audioContent);
-
-        // Determine the audio format. Adjust 'audio/mpeg' if using a different format
+       
         $contentType = 'audio/mpeg';
 
         // Optionally, determine the file extension based on content type
