@@ -93,24 +93,24 @@ public function sendMessage(Request $request)
     $threadId = $request->input('thread_id');  // Uzimaš thread_id iz zahteva
 
     $user = Auth::user();
-try{
-    $ass = OpenAI::assistants()->create([
-        'instructions' => 'You are a personal math tutor. When asked a question, write and run Python code to answer the question.',
-        'name' => 'Math Tutor',
-        'tools' => [
-            [
-                'type' => 'code_interpreter',
-            ],
-        ],
-        'model' => 'gpt-4',
-    ]);
+// try{
+//     $ass = OpenAI::assistants()->create([
+//         'instructions' => 'You are a personal math tutor. When asked a question, write and run Python code to answer the question.',
+//         'name' => 'Math Tutor',
+//         'tools' => [
+//             [
+//                 'type' => 'code_interpreter',
+//             ],
+//         ],
+//         'model' => 'gpt-4',
+//     ]);
     
-} catch (Exception $e){
-    return response()->json([
-        'success' => false,
-        'error' => 'Failed to add message to thread: ' . $e->getMessage(),
-    ], 500);
-}
+// } catch (Exception $e){
+//     return response()->json([
+//         'success' => false,
+//         'error' => 'Failed to add message to thread: ' . $e->getMessage(),
+//     ], 500);
+// }
     if (!$threadId) {
         return response()->json([
             'success' => false,
@@ -137,7 +137,7 @@ try{
 
     try {
         // 1) Create the run
-        $assistantId = $ass->id;
+        $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';
         $run = OpenAI::threads()->runs()->create(
             threadId: $threadId,
             parameters: [
