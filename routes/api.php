@@ -23,6 +23,6 @@ Route::post('/start-chat', [OpenAIController::class, 'createThread'])->middlewar
 Route::post('/audio', [OpenAIController::class, 'streamAudio']);
 
 
-Route::post('/send-message/guest', [OpenAIController::class, 'sendMessageGuest'])
-Route::post('/start-chat/guest', [OpenAIController::class, 'createThreadGuest'])
+Route::post('/send-message/guest', [OpenAIController::class, 'sendMessageGuest']);
+Route::post('/start-chat/guest', [OpenAIController::class, 'createThreadGuest']);
 Route::post('/audio', [OpenAIController::class, 'streamAudio']);
