@@ -190,44 +190,43 @@ public function sendMessage(Request $request)
 
 public function streamAudio(Request $request)
     {
-        // Validate incoming request data
-        $request->validate([
+        // Validate the incoming request
+        $validated = $request->validate([
             'input' => 'required|string',
+        ], [
+            'input.required' => 'The input text is required.',
+            'input.string' => 'The input must be a string.',
         ]);
 
         // Retrieve input data
-        $inputText = $request->input('input');
+        $inputText = $validated['input'];
 
         try {
-            // Initialize your TTS client
-            // Replace with your actual client initialization
-
-            // Initiate the speech stream
-            $stream = OpenAI::audio()->speech([
+            // Generate speech using OpenAI's TTS
+            $response = OpenAI::audio()->speech([
                 'model' => 'tts-1',
                 'input' => $inputText,
                 'voice' => 'alloy',
             ]);
 
-            // Define response headers for audio streaming
-            $headers = [
-                'Content-Type' => 'audio/mpeg', // Update based on your audio format
-                'Transfer-Encoding' => 'chunked',
-                'Cache-Control' => 'no-cache',
-                'Connection' => 'keep-alive',
-            ];
+            // Check if the response contains audio content
+            if (!$response || !isset($response['audio_content'])) {
+            }
 
-            // Stream the audio to the client
-            return Response::json([
-                'success'=> true,
-                'audio' => $stream,
+            // Decode the audio content if it's base64 encoded, adjust as needed
+            $audioContent = base64_decode($response['audio_content']);
+
+            // Return the audio as a streamed response with appropriate headers
+            return Response::make($audioContent, 200, [
+                'Content-Type' => 'audio/mpeg',
+                'Content-Disposition' => 'inline; filename="speech.mp3"',
+                'Content-Length' => strlen($audioContent),
             ]);
 
         } catch (Exception $e) {
-            // Log the error if necessary
-            // Log::error('TTS Streaming Error: ' . $e->getMessage());
+            // Log the error for debugging
 
-            // Return a JSON error response
+            // Return a JSON response with the error message
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to stream audio: ' . $e->getMessage(),
