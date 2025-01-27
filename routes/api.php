@@ -26,3 +26,7 @@ Route::post('/audio', [OpenAIController::class, 'streamAudio']);
 Route::post('/send-message/guest', [OpenAIController::class, 'sendMessageGuest']);
 Route::post('/start-chat/guest', [OpenAIController::class, 'createThreadGuest']);
 Route::post('/audio', [OpenAIController::class, 'streamAudio']);
+
+Route::post('forgot-password/send-otp', [AuthController::class, 'sendOtp']);
+Route::post('forgot-password/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('forgot-password/reset', [AuthController::class, 'resetPassword']);
