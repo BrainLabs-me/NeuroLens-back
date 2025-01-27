@@ -173,7 +173,7 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
         
-        $otp = rand(100000, 999999); 
+        $otp = rand(10000, 99999); 
         $email = $request->email;
 
         DB::table('password_reset_tokens')->updateOrInsert(
