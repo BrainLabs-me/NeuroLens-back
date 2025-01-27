@@ -158,12 +158,9 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Logout user and revoke tokens.
-     */
+
     public function logout(Request $request): JsonResponse
     {
-        // Revoke all tokens for the authenticated user
         $request->user()->tokens()->delete();
 
         return response()->json([
@@ -177,16 +174,14 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
         
-        $otp = rand(100000, 999999); // Generisanje OTP-a
+        $otp = rand(100000, 999999); 
         $email = $request->email;
 
-        // Čuvanje OTP-a u bazi
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $email],
             ['token' => $otp, 'created_at' => now()]
         );
 
-        // Slanje OTP-a na email
         Mail::send('emails.otp', ['otp' => $otp], function($message) use ($email) {
             $message->to($email)->subject('Your OTP Code');
         });
@@ -224,12 +219,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid OTP'], 400);
         }
 
-        // Reset lozinke
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // Obriši OTP
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return response()->json(['message' => 'Password reset successful'], 200);
