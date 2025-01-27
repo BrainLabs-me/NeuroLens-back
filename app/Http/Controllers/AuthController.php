@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\JsonResponse;
 use Google_Client;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+
 class AuthController extends Controller
 {
     /**
@@ -168,4 +171,68 @@ class AuthController extends Controller
             'message' => 'Logout successful!',
         ], Response::HTTP_OK);
     }
+
+
+    public function sendOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+        
+        $otp = rand(100000, 999999); // Generisanje OTP-a
+        $email = $request->email;
+
+        // Čuvanje OTP-a u bazi
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            ['token' => $otp, 'created_at' => now()]
+        );
+
+        // Slanje OTP-a na email
+        Mail::send('emails.otp', ['otp' => $otp], function($message) use ($email) {
+            $message->to($email)->subject('Your OTP Code');
+        });
+
+        return response()->json(['message' => 'OTP sent to your email!'], 200);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|numeric',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+        if (!$record || $record->token != $request->otp) {
+            return response()->json(['message' => 'Invalid OTP'], 400);
+        }
+
+        return response()->json(['message' => 'OTP verified'], 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'otp' => 'required|numeric',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+        if (!$record || $record->token != $request->otp) {
+            return response()->json(['message' => 'Invalid OTP'], 400);
+        }
+
+        // Reset lozinke
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Obriši OTP
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return response()->json(['message' => 'Password reset successful'], 200);
+    }
+
 }
