@@ -144,7 +144,6 @@ class AuthController extends Controller
         // Log in the user
         Auth::login($user);
 
-        // Optionally, generate a personal access token (if using Sanctum or Passport)
         $token = $user->createToken('GoogleAuthToken')->plainTextToken;
 
         return response()->json([
