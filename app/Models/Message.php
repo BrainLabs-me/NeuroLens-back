@@ -29,8 +29,8 @@ class Message extends Model
     protected $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'bot_message' => 'integer',
-        'message' => 'integer',
+        'prompt' => 'string',
+        'message' => 'string',
     ];
 
     public function user(): BelongsTo
