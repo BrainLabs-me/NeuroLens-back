@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Chat;
 use Illuminate\Http\Request;
+use App\Models\Message;
+use Illuminate\Support\Facades\Auth;
 
-class ChatController extends Controller
+class MessageController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        $messages = Message::where('user_id', '=',$user->id);
+        return response()->json(['data'=> $messages, 'succsses' => true]);  
     }
 
     /**
@@ -34,23 +37,23 @@ class ChatController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Chat $chat)
+    public function show(string $id)
     {
-        //
+        
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Chat $chat)
+    public function edit(string $id)
     {
-        //
+  
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Chat $chat)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -58,7 +61,7 @@ class ChatController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Chat $chat)
+    public function destroy(string $id)
     {
         //
     }

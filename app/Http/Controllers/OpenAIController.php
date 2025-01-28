@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use OpenAI\Laravel\Facades\OpenAI;
-use App\Models\Chat;
+use App\Models\Message;
 use Http\Discovery\Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -171,7 +171,7 @@ public function sendMessage(Request $request)
             }
     
             // Save to your database, return to user, etc.
-            Chat::create([
+            Message::create([
                 'user_id' => $user->id,
                 'message' => $generatedText,
                 'prompt'  => $userPrompt

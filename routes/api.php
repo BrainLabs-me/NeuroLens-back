@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OpenAIController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -30,3 +31,5 @@ Route::post('/audio', [OpenAIController::class, 'streamAudio']);
 Route::post('forgot-password/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('forgot-password/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('forgot-password/reset', [AuthController::class, 'resetPassword']);
+
+Route::resource('/messages', MessageController::class)->middleware('auth:sanctum');
