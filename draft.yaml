@@ -5,3 +5,13 @@ models:
     email: string
     password: string
     photo: text nullable
+  Message:
+    id: id
+    user_id: bigInteger foreign:users.id
+    bot_message: bigInteger
+    message: bigInteger
+    role: enum:"user bot"
+  EegSignal:
+    id: id
+    signal: bigInteger
+    user_id: bigInteger foreign:users.id
