@@ -294,7 +294,6 @@ public function sendMessageGuest(Request $request)
 
 
     try {
-        // 1) Create the run
         $assistantId = 'asst_mepEpGvVGZl2G6A9P0zZ7FPX';
         $run = OpenAI::threads()->runs()->create(
             threadId: $threadId,
@@ -303,7 +302,6 @@ public function sendMessageGuest(Request $request)
             ]
         );
     
-        // 2) Poll for completion
         $maxAttempts = 20;
         $attempt = 0;
         $sleepSeconds = 1;
@@ -327,7 +325,6 @@ public function sendMessageGuest(Request $request)
         if ($run->status === 'completed') {
             $messages = OpenAI::threads()->messages()->list($threadId);
     
-            // Now you can find the assistant’s most recent response
             $generatedText = '';
             foreach ($messages->data as $msg) {
                 if ($msg->role === 'assistant') {
@@ -344,7 +341,6 @@ public function sendMessageGuest(Request $request)
             ]);
         }
     
-        // If we exit the loop and never hit 'completed', handle that gracefully
         return response()->json([
             'success' => false,
             'error' => 'Run is still queued after maximum attempts',

@@ -16,10 +16,9 @@ class Message extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
-        'bot_message',
         'message',
-        'role',
+        'prompt',
+        'user_id'
     ];
 
     /**

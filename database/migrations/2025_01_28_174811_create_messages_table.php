@@ -17,9 +17,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->bigInteger('bot_message');
-            $table->bigInteger('message');
-            $table->enum('role', ["user bot"]);
+            $table->string('message');
+            $table->string('prompt');
             $table->timestamps();
         });
 
