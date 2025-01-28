@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('message');
-            $table->string('prompt');
+            $table->text('message');
+            $table->text('prompt');
             $table->timestamps();
         });
 
