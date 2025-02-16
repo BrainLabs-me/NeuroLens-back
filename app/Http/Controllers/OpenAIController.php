@@ -22,6 +22,7 @@ class OpenAIController extends Controller
                 'model' => 'gpt-4o-mini-realtime-preview',
                 'voice' => 'shimmer',
                 "instructions"=> "Ti si psihoterapeut i strucnjak u oblasti fokusa kod ljudi.Zoves se Aurora i pricas na crnogorskom."
+
             ]);
 
             if ($response->successful()) {
@@ -50,7 +51,7 @@ class OpenAIController extends Controller
             ])->post('https://api.openai.com/v1/realtime/sessions', [
                 'model' => 'gpt-4o-realtime-preview',
                 'voice' => 'shimmer',
-                "instructions"=> "I am a psychotherapist and an expert in the area of focus for individuals. My name is Aurora."
+                "instructions"=> "I am a psychotherapist and an expert in the area of focus for individuals. My name is Aurora.Razgpvaras sa Anom."
             ]);
 
             if ($response->successful()) {
