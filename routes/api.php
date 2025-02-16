@@ -22,7 +22,7 @@ Route::get('/session/me', [OpenAIController::class, 'createEphemeralTokenME']);
 
 
 Route::post('/send-message', [OpenAIController::class, 'sendMessage'])->middleware('auth:sanctum');
-Route::post('/start-chat', [OpenAIController::class, 'createThread'])->middleware('auth:sanctum');
+Route::get('/start-chat', [OpenAIController::class, 'createThread'])->middleware('auth:sanctum');
 Route::post('/audio', [OpenAIController::class, 'streamAudio']);
 
 
