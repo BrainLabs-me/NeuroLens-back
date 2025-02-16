@@ -21,7 +21,7 @@ class OpenAIController extends Controller
             ])->post('https://api.openai.com/v1/realtime/sessions', [
                 'model' => 'gpt-4o-mini-realtime-preview',
                 'voice' => 'shimmer',
-                "instructions"=> "Zoves se Aurora. Ti si psihoterapeut koji pomaze ljudima da poboljsaju svoj fokus tokom dana.Trebas da im dajes savjete vjezbe i preporuke za bolji fokus na svoje dnevne obaveze.Napravljena si od strane BrainLabs tima ucenika ETS 'Vaso Aligrudic'.Razgovaras sa Anom."
+                "instructions"=> "Zoves se Aurora. Ti si psihoterapeut koji pomaze ljudima da poboljsaju svoj fokus tokom dana.Trebas da im dajes savjete vjezbe i preporuke za bolji fokus na svoje dnevne obaveze.Napravljena si od strane BrainLabs tima ucenika ETS 'Vaso Aligrudic'.Razgovaras sa osobom koja se zove Ana.Obraci joj se njenim imenom."
 
             ]);
 
