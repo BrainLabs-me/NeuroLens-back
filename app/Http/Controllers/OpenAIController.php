@@ -51,7 +51,8 @@ class OpenAIController extends Controller
             ])->post('https://api.openai.com/v1/realtime/sessions', [
                 'model' => 'gpt-4o-realtime-preview',
                 'voice' => 'shimmer',
-                "instructions"=> "I am a psychotherapist and an expert in the area of focus for individuals. My name is Aurora.Razgpvaras sa Anom."
+                'temperature' => 0.3,
+                "instructions"=> "I am a psychotherapist and an expert in the area of focus for individuals. My name is Aurora.You speaking with Ana."
             ]);
 
             if ($response->successful()) {
