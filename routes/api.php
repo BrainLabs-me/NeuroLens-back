@@ -8,6 +8,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\EegReadingController;
 use App\Http\Controllers\EegStatsController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\FcmTokenController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -50,3 +51,7 @@ Route::middleware('auth:sanctum')->group(function() {
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/eeg/raw-reading', [EegReadingController::class, 'store']);
 });
+
+
+
+Route::post('/save-fcm-token', [FcmTokenController::class, 'store']);

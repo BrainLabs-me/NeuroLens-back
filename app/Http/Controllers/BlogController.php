@@ -19,13 +19,10 @@ class BlogController extends Controller
             'topic' => 'required|string|max:255',
         ]);
 
-        // Kreiranje OpenAI klijenta
         $client = OpenAI::client( env('OPENAI_API_KEY'));
 
-        // Prompt za generisanje bloga
         $prompt = "Napiši detaljan blog na temu: {$request->topic}. Blog treba da ima naslov, kratak rezime i sadržaj.";
 
-        // OpenAI API poziv
         $response = $client->chat()->create([
             'model' => 'gpt-4',
             'messages' => [
@@ -34,15 +31,12 @@ class BlogController extends Controller
             ],
         ]);
 
-        // Dobijanje generisanog teksta
         $generatedText = $response->choices[0]->message->content;
 
-        // Parsiranje generisanog teksta
-        $title = strtok($generatedText, "\n"); // Prva linija kao naslov
-        $content = substr($generatedText, strlen($title)); // Ostatak kao sadržaj
-        $summary = substr($content, 0, 200) . "..."; // Prvih 200 karaktera kao sažetak
+        $title = strtok($generatedText, "\n"); 
+        $content = substr($generatedText, strlen($title)); 
+        $summary = substr($content, 0, 200) . "..."; 
 
-        // Kreiranje bloga u bazi podataka
         $blog = Blog::create([
             'title' => trim($title),
             'summary' => trim($summary),
