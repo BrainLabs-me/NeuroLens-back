@@ -40,6 +40,7 @@ Route::resource('/messages', MessageController::class)->middleware('auth:sanctum
 
 
 Route::get('/blogs', [BlogController::class, 'index']);
+Route::get('/blogs/{id}', [BlogController::class, 'show']);
 Route::post('/blogs', [BlogController::class, 'store']);
 Route::post('/generate-blog', [BlogController::class, 'store']);
 
