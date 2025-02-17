@@ -9,7 +9,7 @@ return new class extends Migration {
         Schema::create('fcm_tokens', function (Blueprint $table) {
             $table->id();
             // $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Ako korisnik postoji
-            $table->string('token')->unique();
+            $table->text('token');
             $table->timestamps();
         });
     }
